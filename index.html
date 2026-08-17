@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Heart - I Love You</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Canvas for Dust & Ambient Glow -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Main 3D Scene Viewport -->
+    <div id="viewport">
+        <div id="heart-container" class="heart-3d">
+            <!-- Dynamic 3D Text Spans will be injected here via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Interactive Cursor Follower Glow -->
+    <div id="cursor-glow"></div>
+
+    <!-- UI Overlay Controls -->
+    <div id="ui-overlay">
+        <button id="toggle-panel-btn" class="glass-btn icon-btn" title="Toggle Settings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        </button>
+
+        <button id="sound-btn" class="glass-btn icon-btn" title="Toggle Ambient Lofi Music">
+            <svg id="sound-icon-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+            <svg id="sound-icon-on" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+        </button>
+
+        <div id="controls-panel" class="glass-card hidden">
+            <div class="panel-header">
+                <h3>Heart Controls</h3>
+                <button id="close-panel-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="panel-body">
+                <div class="control-group">
+                    <label for="custom-text-input">Custom Text:</label>
+                    <input type="text" id="custom-text-input" value="i love you" maxlength="30" placeholder="Type message...">
+                </div>
+
+                <div class="control-group">
+                    <label for="color-theme-select">Color Theme:</label>
+                    <select id="color-theme-select">
+                        <option value="soft-pink" selected>Soft Pink (Original)</option>
+                        <option value="rose-gold">Rose Gold</option>
+                        <option value="cyber-magenta">Cyberpunk Magenta</option>
+                        <option value="crimson-red">Crimson Flame</option>
+                        <option value="violet-glow">Midnight Violet</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="density-slider">Density (<span id="density-val">1000</span>):</label>
+                    <input type="range" id="density-slider" min="400" max="1600" step="50" value="1000">
+                </div>
+
+                <div class="control-group checkbox-group">
+                    <label for="auto-rotate-check">
+                        <input type="checkbox" id="auto-rotate-check" checked>
+                        Slow Auto Rotate
+                    </label>
+                </div>
+
+                <div class="control-group checkbox-group">
+                    <label for="sound-chime-check">
+                        <input type="checkbox" id="sound-chime-check" checked>
+                        Hover Sound Effects
+                    </label>
+                </div>
+
+                <div class="panel-actions">
+                    <button id="reset-view-btn" class="glass-btn">Reset View</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subtitle / Hint -->
+    <div id="hint-banner">
+        <span>Hover over the text • Drag to rotate 3D view</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
