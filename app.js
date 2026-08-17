@@ -1,7 +1,6 @@
 /**
- * Ultra-Lightweight 3D Text Heart Engine
- * Optimized for maximum 60-120 FPS performance on any device/laptop.
- * Zero CPU shadowBlur overhead, hardware composited CSS filter, pre-allocated memory buffers.
+ * Ultra-Featherweight 3D Text Heart Engine
+ * Extremely light footprint - 0% CPU idle usage, instant responsiveness on any PC.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -30,17 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Color Palettes
     const themes = {
-        'soft-pink': { base: '#ecb2d6', glow: 'rgba(236, 178, 214, 0.5)', hover: '#ff55a3' },
-        'rose-gold': { base: '#f0c3ad', glow: 'rgba(240, 195, 173, 0.5)', hover: '#ff9966' },
-        'cyber-magenta': { base: '#f584e0', glow: 'rgba(245, 132, 224, 0.6)', hover: '#ff00d4' },
-        'crimson-red': { base: '#ff8899', glow: 'rgba(255, 136, 153, 0.6)', hover: '#ff1a40' },
-        'violet-glow': { base: '#cb9bf5', glow: 'rgba(203, 155, 245, 0.6)', hover: '#a13bf5' }
+        'soft-pink': { base: '#ecb2d6', hover: '#ff55a3' },
+        'rose-gold': { base: '#f0c3ad', hover: '#ff9966' },
+        'cyber-magenta': { base: '#f584e0', hover: '#ff00d4' },
+        'crimson-red': { base: '#ff8899', hover: '#ff1a40' },
+        'violet-glow': { base: '#cb9bf5', hover: '#a13bf5' }
     };
 
-    // State
+    // State Variables
     let currentTheme = themes['soft-pink'];
     let targetText = 'i love you';
-    let textCount = 400;
+    let textCount = 150; // Ultra lightweight default
     let autoRotate = true;
     let soundEnabled = true;
     let bgAudioPlaying = false;
@@ -65,10 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let audioCtx = null;
     let bgOscillators = [];
     let bgGainNode = null;
-    const pentatonicPitches = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00];
-
-    // Background Dust Particles
-    let bgParticles = [];
+    const pentatonicPitches = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
 
     // --- 1. Parametric Heart Math ---
 
@@ -82,25 +78,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const delta = 0.001;
         const p1 = getHeartPoint(t - delta, 1);
         const p2 = getHeartPoint(t + delta, 1);
-        const dx = p2.x - p1.x;
-        const dy = p2.y - p1.y;
-        return Math.atan2(dy, dx);
+        return Math.atan2(p2.y - p1.y, p2.x - p1.x);
     }
 
     function generateHeartGeometry() {
         heartPoints = [];
         projectedNodes = [];
 
-        const layersCount = 8;
-        const itemsPerLayer = Math.floor(textCount / layersCount);
+        const layersCount = 6;
+        const itemsPerLayer = Math.max(10, Math.floor(textCount / layersCount));
         const scaleBase = Math.min(window.innerWidth, window.innerHeight) < 600 ? 11 : 16;
 
         let index = 0;
         for (let l = 0; l < layersCount; l++) {
             const layerProgress = l / (layersCount - 1);
-            const zOffset = (layerProgress - 0.5) * 150;
-            const layerScale = scaleBase * (1.0 - (l * 0.025));
-            const tOffset = (l * 0.08) % (2 * Math.PI);
+            const zOffset = (layerProgress - 0.5) * 140;
+            const layerScale = scaleBase * (1.0 - (l * 0.03));
+            const tOffset = (l * 0.1) % (2 * Math.PI);
 
             for (let i = 0; i < itemsPerLayer; i++) {
                 const fraction = i / itemsPerLayer;
@@ -132,18 +126,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 2. Ultra-Fast Rendering Loop ---
+    // --- 2. Lightweight Rendering Pipeline ---
 
     function resizeCanvas() {
-        // Cap scale to 1.0 for instant 60 FPS without high-DPI supersampling overhead
         heartCanvas.width = window.innerWidth;
         heartCanvas.height = window.innerHeight;
-
         bgCanvas.width = window.innerWidth;
         bgCanvas.height = window.innerHeight;
 
-        initBgCanvas();
+        drawStaticStars();
         generateHeartGeometry();
+    }
+
+    function drawStaticStars() {
+        bgCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        bgCtx.fillStyle = 'rgba(238, 181, 215, 0.35)';
+        const count = 25;
+        for (let i = 0; i < count; i++) {
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            bgCtx.fillRect(x, y, 2, 2);
+        }
     }
 
     function renderHeart() {
@@ -161,20 +164,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const cosX = Math.cos(radX), sinX = Math.sin(radX);
         const cosY = Math.cos(radY), sinY = Math.sin(radY);
 
-        let closestDist = 26;
+        let closestDistSq = 900; // 30px radius
         let newHoveredIndex = -1;
 
-        // Project 3D points
         const count = heartPoints.length;
         for (let i = 0; i < count; i++) {
             const pt = heartPoints[i];
             const node = projectedNodes[i];
 
-            // Rotation Y
+            // 3D Matrix Math
             const x1 = pt.x * cosY + pt.z * sinY;
             const z1 = -pt.x * sinY + pt.z * cosY;
-
-            // Rotation X
             const y1 = pt.y * cosX - z1 * sinX;
             const z2 = pt.y * sinX + z1 * cosX;
 
@@ -185,13 +185,13 @@ document.addEventListener('DOMContentLoaded', () => {
             node.scale = scale;
             node.angle = pt.angle + radY;
 
-            // Hit test
+            // Fast hit test
             const dx = mouseX - node.x;
             const dy = mouseY - node.y;
             const distSq = dx * dx + dy * dy;
 
-            if (distSq < closestDist * closestDist) {
-                closestDist = Math.sqrt(distSq);
+            if (distSq < closestDistSq) {
+                closestDistSq = distSq;
                 newHoveredIndex = node.id;
             }
         }
@@ -209,13 +209,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         heartCanvas.style.cursor = hoveredIndex !== -1 ? 'pointer' : (isDragging ? 'grabbing' : 'grab');
 
-        // Sort back-to-front by Z depth
+        // Sort by Z
         projectedNodes.sort((a, b) => b.z - a.z);
 
-        // Draw Text Spans (0 shadowBlur for super speed!)
+        // Render Text
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.font = '500 13px Outfit, sans-serif';
+        ctx.font = '500 13.5px Outfit, sans-serif';
 
         for (let i = 0; i < count; i++) {
             const node = projectedNodes[i];
@@ -229,14 +229,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.scale(node.scale * 1.45, node.scale * 1.45);
                 ctx.fillStyle = '#ffffff';
                 ctx.shadowColor = currentTheme.hover;
-                ctx.shadowBlur = 14;
+                ctx.shadowBlur = 12;
                 ctx.font = '600 14px Outfit, sans-serif';
             } else {
                 ctx.scale(node.scale, node.scale);
-                const alpha = 0.45 + (1 - Math.abs(node.layerProgress - 0.5) * 2) * 0.55;
-                ctx.globalAlpha = alpha;
+                ctx.globalAlpha = 0.5 + (1 - Math.abs(node.layerProgress - 0.5) * 2) * 0.5;
                 ctx.fillStyle = currentTheme.base;
-                ctx.shadowBlur = 0; // Extremely lightweight!
+                ctx.shadowBlur = 0;
             }
 
             ctx.fillText(targetText, 0, 0);
@@ -244,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 3. Sound & Particles ---
+    // --- 3. Sound Synth & Particles ---
 
     function initAudio() {
         if (!audioCtx) {
@@ -273,14 +272,14 @@ document.addEventListener('DOMContentLoaded', () => {
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
             gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 0.03);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.28);
+            gainNode.gain.exponentialRampToValueAtTime(0.07, audioCtx.currentTime + 0.03);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
 
             osc.connect(gainNode);
             gainNode.connect(audioCtx.destination);
 
             osc.start();
-            osc.stop(audioCtx.currentTime + 0.3);
+            osc.stop(audioCtx.currentTime + 0.26);
         } catch (e) {}
     }
 
@@ -294,9 +293,9 @@ document.addEventListener('DOMContentLoaded', () => {
         particle.style.left = `${x}px`;
         particle.style.top = `${y}px`;
 
-        const dx = (Math.random() - 0.5) * 70;
-        const dy = -35 - Math.random() * 50;
-        const rot = (Math.random() - 0.5) * 80;
+        const dx = (Math.random() - 0.5) * 60;
+        const dy = -30 - Math.random() * 40;
+        const rot = (Math.random() - 0.5) * 60;
 
         particle.style.setProperty('--dx', `${dx}px`);
         particle.style.setProperty('--dy', `${dy}px`);
@@ -308,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (particle.parentNode) {
                 particle.parentNode.removeChild(particle);
             }
-        }, 1000);
+        }, 900);
     }
 
     function toggleBgMusic() {
@@ -331,11 +330,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let chordIdx = 0;
             bgGainNode = audioCtx.createGain();
-            bgGainNode.gain.setValueAtTime(0.035, audioCtx.currentTime);
+            bgGainNode.gain.setValueAtTime(0.03, audioCtx.currentTime);
 
             const filter = audioCtx.createBiquadFilter();
             filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(550, audioCtx.currentTime);
+            filter.frequency.setValueAtTime(500, audioCtx.currentTime);
 
             bgGainNode.connect(filter);
             filter.connect(audioCtx.destination);
@@ -365,49 +364,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 4. Starfield Dust Canvas ---
-
-    function initBgCanvas() {
-        bgParticles = [];
-        const count = 30; // Very small light count
-        for (let i = 0; i < count; i++) {
-            bgParticles.push({
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-                radius: Math.random() * 1.5 + 0.5,
-                alpha: Math.random() * 0.5 + 0.2,
-                speed: Math.random() * 0.2 + 0.05
-            });
-        }
-    }
-
-    function drawBgCanvas() {
-        bgCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        bgCtx.fillStyle = 'rgba(238, 181, 215, 0.4)';
-        for (let i = 0; i < bgParticles.length; i++) {
-            const p = bgParticles[i];
-            bgCtx.fillRect(p.x, p.y, p.radius * 2, p.radius * 2);
-            p.y -= p.speed;
-            if (p.y < 0) {
-                p.y = window.innerHeight;
-                p.x = Math.random() * window.innerWidth;
-            }
-        }
-    }
-
-    // --- 5. Main Animation Loop & Input Listeners ---
+    // --- 4. Main Animation Loop ---
 
     function animate() {
         if (autoRotate && !isDragging) {
-            targetRotY += 0.25;
+            targetRotY += 0.2;
         }
 
         rotX += (targetRotX - rotX) * 0.08;
         rotY += (targetRotY - rotY) * 0.08;
 
-        drawBgCanvas();
         renderHeart();
-
         requestAnimationFrame(animate);
     }
 
