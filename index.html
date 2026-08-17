@@ -6,17 +6,17 @@
     <title>3D Heart - I Love You</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Background Canvas for Stars & Glow -->
+    <!-- Background Canvas for Stars -->
     <canvas id="bg-canvas"></canvas>
 
-    <!-- Main High-Performance 3D Heart Canvas -->
+    <!-- Main Lightweight 3D Heart Canvas -->
     <canvas id="heart-canvas"></canvas>
 
-    <!-- Interactive Cursor Follower Glow -->
+    <!-- Cursor Follower Glow -->
     <div id="cursor-glow"></div>
 
     <!-- UI Overlay Controls -->
@@ -63,8 +63,8 @@
                 </div>
 
                 <div class="control-group">
-                    <label for="density-slider">Density (<span id="density-val">600</span>):</label>
-                    <input type="range" id="density-slider" min="200" max="1000" step="50" value="600">
+                    <label for="density-slider">Density (<span id="density-val">400</span>):</label>
+                    <input type="range" id="density-slider" min="150" max="800" step="50" value="400">
                 </div>
 
                 <div class="control-group checkbox-group">
