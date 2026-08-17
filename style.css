@@ -279,7 +279,7 @@ html, body {
     left: 50%;
     transform: translateX(-50%);
     background: rgba(15, 15, 25, 0.5);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px); 
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 8px 20px;
