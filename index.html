@@ -6,19 +6,15 @@
     <title>3D Heart - I Love You</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Background Canvas for Dust & Ambient Glow -->
+    <!-- Background Canvas for Stars & Glow -->
     <canvas id="bg-canvas"></canvas>
 
-    <!-- Main 3D Scene Viewport -->
-    <div id="viewport">
-        <div id="heart-container" class="heart-3d">
-            <!-- Dynamic 3D Text Spans will be injected here via JavaScript -->
-        </div>
-    </div>
+    <!-- Main High-Performance 3D Heart Canvas -->
+    <canvas id="heart-canvas"></canvas>
 
     <!-- Interactive Cursor Follower Glow -->
     <div id="cursor-glow"></div>
@@ -67,8 +63,8 @@
                 </div>
 
                 <div class="control-group">
-                    <label for="density-slider">Density (<span id="density-val">1000</span>):</label>
-                    <input type="range" id="density-slider" min="400" max="1600" step="50" value="1000">
+                    <label for="density-slider">Density (<span id="density-val">600</span>):</label>
+                    <input type="range" id="density-slider" min="200" max="1000" step="50" value="600">
                 </div>
 
                 <div class="control-group checkbox-group">

@@ -55,7 +55,7 @@ html, body {
     color: #ffffff;
 }
 
-/* Background Canvas */
+/* Background Star & Glow Canvas */
 #bg-canvas {
     position: absolute;
     top: 0;
@@ -66,71 +66,20 @@ html, body {
     pointer-events: none;
 }
 
-/* 3D Viewport */
-#viewport {
+/* Main 3D Heart Canvas */
+#heart-canvas {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 2;
-    perspective: 1100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     cursor: grab;
+    touch-action: none;
 }
 
-#viewport:active {
+#heart-canvas:active {
     cursor: grabbing;
-}
-
-/* 3D Heart Container */
-#heart-container {
-    position: relative;
-    width: 0;
-    height: 0;
-    transform-style: preserve-3d;
-    will-change: transform;
-    transition: transform 0.05s ease-out;
-}
-
-/* Individual "i love you" Text Span */
-.heart-text {
-    position: absolute;
-    left: 0;
-    top: 0;
-    white-space: nowrap;
-    font-size: 13.5px;
-    font-weight: 500;
-    letter-spacing: 0.2px;
-    color: var(--text-pink-base);
-    text-shadow: 
-        0 0 4px var(--text-pink-glow),
-        0 0 10px var(--text-pink-glow);
-    transform-style: preserve-3d;
-    backface-visibility: visible;
-    transform-origin: center center;
-    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-                color 0.2s ease, 
-                text-shadow 0.2s ease,
-                opacity 0.3s ease;
-    cursor: pointer;
-    padding: 2px 4px;
-    border-radius: 4px;
-    will-change: transform, color, text-shadow;
-}
-
-/* Hover State for "i love you" */
-.heart-text:hover {
-    color: var(--text-pink-bright) !important;
-    text-shadow: 
-        0 0 8px #ffffff,
-        0 0 18px var(--text-pink-hover-glow),
-        0 0 30px var(--text-pink-hover-glow),
-        0 0 45px var(--text-pink-hover-glow) !important;
-    z-index: 99999 !important;
-    opacity: 1 !important;
 }
 
 /* Cursor Glow */
